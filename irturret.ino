@@ -68,6 +68,7 @@ void shakeHeadNo(int moves = 3);
 int joyStickButtonPin = 7;
 int joyStickXPin = A0;
 int joyStickYPin = A1;
+int joyStickThreshold = 200;
 
 //////////////////////////////////////////////////
                 //  S E T U P  //
