@@ -1,8 +1,9 @@
 #define PASSCODE_LENGTH 4
-#define CORRECT_PASSCODE "1234" // Change this to your desired passcode
+#define CORRECT_PASSCODE "1454" // Change this to your desired passcode
 
 char passcode[PASSCODE_LENGTH + 1] = ""; // Buffer to store user input passcode
 bool passcodeEntered = false; // Flag to indicate if passcode has been entered correctly
+bool distanceTrackingEnabled = false;
 
 
 //////////////////////////////////////////////////
@@ -11,6 +12,15 @@ bool passcodeEntered = false; // Flag to indicate if passcode has been entered c
 #include <Arduino.h>
 #include <Servo.h>
 #include <IRremote.hpp>
+#include <NewPing.h>
+
+// define ultrasonic sensor pins
+#define TRIG_PIN 7
+#define ECHO_PIN 6
+// define distance
+#define MAX_DISTANCE 200
+// define ping
+NewPing sonar(TRIG_PIN, ECHO_PIN, MAX_DISTANCE);
 
 #define DECODE_NEC  //defines the type of IR transmission to decode based on the remote. See IRremote library for examples on how to decode other types of remote
 
@@ -60,15 +70,21 @@ int rollPrecision = 158; // this variable represents the time in milliseconds th
 int pitchMax = 150; // this sets the maximum angle of the pitch servo to prevent it from crashing, it should remain below 180, and be greater than the pitchMin
 int pitchMin = 33; // this sets the minimum angle of the pitch servo to prevent it from crashing, it should remain above 0, and be less than the pitchMax
 
-
-void shakeHeadYes(int moves = 3); //function prototypes for shakeHeadYes and No for proper compiling
-void shakeHeadNo(int moves = 3);
+// laser point setup
+// this integer is used to turn the laser on/off
+int laserPos = 0;
+int laserStatus = LOW;
 
 // Joystick Pins
 int joyStickButtonPin = 7;
 int joyStickXPin = A0;
 int joyStickYPin = A1;
 int joyStickThreshold = 200;
+
+void shakeHeadYes(int moves = 3); //function prototypes for shakeHeadYes and No for proper compiling
+void shakeHeadNo(int moves = 3);
+
+void checkDistance(int threshold = 150);
 
 //////////////////////////////////////////////////
                 //  S E T U P  //
@@ -90,6 +106,8 @@ void setup() {
     printActiveIRProtocols(&Serial);
     Serial.println(F("at pin 9"));
 
+    pinMode(8, OUTPUT);
+
   homeServos();
 }
 
@@ -103,6 +121,11 @@ void loop() {
         IrReceiver.resume(); // Enable receiving of the next value
         handleCommand(command); // Handle the received command through switch statements
     }
+
+    // if (passcodeEntered == true && distanceTrackingEnabled) {
+    //     checkDistance();
+    // }
+
     delay(5); //delay for smoothness
 }
 
@@ -112,6 +135,7 @@ void checkPasscode() {
         Serial.println("CORRECT PASSCODE");
         passcodeEntered = true;
         shakeHeadYes();
+        
     } else {
         // Incorrect passcode entered, shake head no
         passcodeEntered = false;
@@ -197,6 +221,8 @@ void handleCommand(int command) {
         case cmd1: // Add digit 1 to passcode
             if (!passcodeEntered) {
                 addPasscodeDigit('1');
+            } else {
+                distanceTrackingEnabled = !distanceTrackingEnabled; // Toggle distance tracking state
             }
             break;
 
@@ -251,6 +277,8 @@ void handleCommand(int command) {
         case cmd0: // Add digit 0 to passcode
             if (!passcodeEntered) {
                 addPasscodeDigit('0');
+            } else {
+                toggleLaser();
             }
             break;
 
@@ -262,6 +290,19 @@ void handleCommand(int command) {
     if (strlen(passcode) == PASSCODE_LENGTH){
         checkPasscode();
     }
+}
+
+void toggleLaser() {
+  if  (laserStatus == LOW) {
+    //laserPos = 255;
+    digitalWrite(8, HIGH);
+    laserStatus = HIGH;
+    delay(50);
+  } else {
+    digitalWrite(8, LOW);
+    laserStatus = LOW;
+    delay(50);
+  }
 }
 
 void leftMove(int moves){
@@ -377,4 +418,14 @@ void shakeHeadNo(int moves = 3) {
         delay(50); // Pause at starting position
     }
 }
-  
+
+void checkDistance(int threshold = 150) {
+    unsigned int distance = sonar.ping_cm();
+    Serial.print("Distance: ");
+    Serial.println(distance);
+
+    if (distance < threshold) {
+        Serial.println("object detected");
+        delay(100);
+    }
+}
