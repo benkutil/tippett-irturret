@@ -75,9 +75,17 @@ int pitchMin = 33; // this sets the minimum angle of the pitch servo to prevent 
 int laserPos = 0;
 int laserStatus = LOW;
 
+// Joystick Pins
+int joyStickButtonPin = 7;
+int joyStickXPin = A0;
+int joyStickYPin = A1;
+int joyStickThreshold = 200;
+
 void shakeHeadYes(int moves = 3); //function prototypes for shakeHeadYes and No for proper compiling
 void shakeHeadNo(int moves = 3);
+
 void checkDistance(int threshold = 150);
+
 //////////////////////////////////////////////////
                 //  S E T U P  //
 //////////////////////////////////////////////////
