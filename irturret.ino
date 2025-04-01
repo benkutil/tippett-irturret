@@ -114,11 +114,16 @@ void loop() {
         IrReceiver.resume(); // Enable receiving of the next value
         handleCommand(command); // Handle the received command through switch statements
     }
-
-    // if (passcodeEntered == true && distanceTrackingEnabled) {
-    //     checkDistance();
-    // }
-
+    
+    // check distance
+    distance = getDistance();
+    if (passcodeEntered && distanceTrackingEnabled) {
+      Serial.println("both true");
+      if (distance < threshold && distance > 0) {
+        fire();
+      }
+    }
+    
     delay(5); //delay for smoothness
 }
 
