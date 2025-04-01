@@ -78,7 +78,6 @@ int laserStatus = LOW;
 void shakeHeadYes(int moves = 3); //function prototypes for shakeHeadYes and No for proper compiling
 void shakeHeadNo(int moves = 3);
 
-void checkDistance(int threshold = 150);
 
 //////////////////////////////////////////////////
                 //  S E T U P  //
@@ -413,7 +412,6 @@ void shakeHeadNo(int moves = 3) {
     }
 }
 
-void checkDistance(int threshold = 150) {
     unsigned int distance = sonar.ping_cm();
     Serial.print("Distance: ");
     Serial.println(distance);
