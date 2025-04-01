@@ -15,8 +15,8 @@ bool distanceTrackingEnabled = false;
 #include <NewPing.h>
 
 // define ultrasonic sensor pins
-#define TRIG_PIN 7
-#define ECHO_PIN 6
+#define TRIG_PIN 6
+#define ECHO_PIN 7
 // define distance
 #define MAX_DISTANCE 200
 // define ping
