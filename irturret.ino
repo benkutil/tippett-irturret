@@ -417,12 +417,7 @@ void shakeHeadNo(int moves = 3) {
     }
 }
 
+int getDistance(){
     unsigned int distance = sonar.ping_cm();
-    Serial.print("Distance: ");
-    Serial.println(distance);
-
-    if (distance < threshold) {
-        Serial.println("object detected");
-        delay(100);
-    }
+    return distance;
 }
