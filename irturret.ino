@@ -78,6 +78,7 @@ int laserStatus = LOW;
 void shakeHeadYes(int moves = 3); //function prototypes for shakeHeadYes and No for proper compiling
 void shakeHeadNo(int moves = 3);
 
+int threshold = 150;
 
 //////////////////////////////////////////////////
                 //  S E T U P  //
@@ -109,6 +110,7 @@ void setup() {
 ////////////////////////////////////////////////
 
 void loop() {
+    // Receive IR codes
     if (IrReceiver.decode()) { //if we have recieved a comman this loop...
         int command = IrReceiver.decodedIRData.command; //store it in a variable
         IrReceiver.resume(); // Enable receiving of the next value
@@ -221,6 +223,7 @@ void handleCommand(int command) {
                 addPasscodeDigit('1');
             } else {
                 distanceTrackingEnabled = !distanceTrackingEnabled; // Toggle distance tracking state
+                //distanceTrackingFired = false; // Toggle if we've fired
             }
             break;
 
